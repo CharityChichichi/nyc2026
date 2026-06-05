@@ -429,11 +429,10 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
   </div>
   <div class="nav-logo" onclick="go('home')">NYC <span>2026</span></div>
   <button class="burger" onclick="toggleMenu()">☰</button>
-
   <div class="nav-links" id="navLinks">
     <a onclick="go('home')" id="nav-home" class="active">Home</a>
     <a onclick="go('register')" id="nav-register">Register</a>
-     <a onclick="go('international')" id="nav-register">International</a>
+    <a onclick="go('international')" id="nav-international">International</a>
     <a onclick="go('about')" id="nav-about">Conference</a>
     <a onclick="go('partnership')" id="nav-partnership">Partnership</a>
     <a onclick="go('regalia')" id="nav-regalia">Regalia</a>
@@ -761,7 +760,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
 </div>
 
 
-<!-- ══ REGISTER ═══════════════════════════════════════════════════ -->
+<!-- ══ INTERNATIONAL ═══════════════════════════════════════════════════ -->
 <div id="page-international" class="page">
   <div class="reg-wrap">
     <div class="sec-eyebrow reveal">International Delegates</div>
@@ -773,7 +772,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
       <div class="form-row">
         <div class="form-group">
           <label>Title / Role *</label>
-          <select id="r_title" required onchange="calcFee()">
+          <select id="r_title" required onchange="updateFee()">
             <option value="">Select your title</option>
             <option>Pastor</option><option>Advisor</option><option>Friend of the Ministry</option><option>BOT</option><option>GOQ</option>
           </select>
@@ -809,7 +808,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         <div><div class="fdl">Registration Fee</div><div style="color:var(--pu4);font-size:.72rem;margin-top:.2rem" id="feeNote">Select title and zone to calculate</div></div>
         <div class="fda" id="feeAmt">—</div>
       </div>
-      <button class="submit-btn" onclick="submitReg()">✦ Submit Registration ✦</button>
+      <button class="submit-btn" onclick="submitInter()">✦ Submit Registration ✦</button>
       <div class="contact-note">
         For registration enquiries contact: <strong>Chiedza</strong> — 062 598 3048 &nbsp;|&nbsp; <strong>Tamah</strong> — 069 345 3004
       </div>
@@ -830,6 +829,8 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
       <button class="btn-hero-primary" style="margin-top:2rem" onclick="resetReg()">Register Another Person</button>
     </div>
 </div>
+
+
 <!-- ══ DEPARTMENTS / SERVE ════════════════════════════════════════ -->
 <div id="page-departments" class="page">
   <div class="dept-hero section" style="padding-bottom:0">
@@ -1322,7 +1323,6 @@ const GAUTENG = ['Zone 9','Zone 10','Zone 11', 'Zone 1'];
 function toggleMenu(){
   document.getElementById('navLinks').classList.toggle('show');
 }
-
 // ── NAVIGATION ────────────────────────────────
 function go(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1438,6 +1438,19 @@ function resetReg(){
   document.querySelector('input[name=acc][value=No]').checked=true;
 }
 
+function updateFee(){
+  const title = document.getElementById('r_title').value;
+  let fee = 100;
+  let note = 'Outside Gauteng rate (incl. Advisors)';
+
+  if(title === 'Pastor'){
+    fee = 500;
+    note = 'Pastor rate';
+  }
+
+  document.getElementById('feeDisplay').innerText = "R" + fee;
+}
+
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){
   const title=document.getElementById('r_title').value;
@@ -1447,7 +1460,16 @@ async function submitInter(){
   const zone=document.getElementById('r_country').value.trim();
   const acc=document.querySelector('input[name=acc]:checked')?.value||'No';
   const diet='';
-  const fee=calcFee();
+
+  let fee, note;
+
+  if(title === 'Pastor'){
+      fee = 500;
+      note = 'Pastor rate';
+  } else {
+      fee = 100;
+      note = 'Outside Gauteng rate (incl. Advisors)';
+  }
   if(!title||!name||!email||!phone||!country){toast('Please fill in all required fields.','err');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.','err');return;}
   const reg={id:Date.now().toString(),timestamp:new Date().toISOString(),title,name,email,phone,country,accommodation:acc,dietary:diet,fee,status:'Pending'};

@@ -778,7 +778,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
       <div class="form-row">
         <div class="form-group">
           <label>Title / Role *</label>
-          <select id="r_title" required onchange="updateFee()">
+          <select id="r_title_int" required onchange="updateFee()">
             <option value="">Select your title</option>
             <option>Pastor</option><option>Advisor</option><option>Friend of the Ministry</option><option>BOT</option><option>GOQ</option>
           </select>
@@ -1445,7 +1445,7 @@ function resetReg(){
 }
 
 function updateFee(){
-  const title=document.getElementById('r_title').value;
+  const title=document.getElementById('r_title_int').value;
 
   let fee=100;
   let note='International Delegate Rate';
@@ -1460,7 +1460,7 @@ function updateFee(){
 }
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){
-  const title=document.getElementById('r_title').value;
+  const title=document.getElementById('r_title_int').value;
   const name=document.getElementById('r_name').value.trim();
   const email=document.getElementById('r_email').value.trim();
   const phone=document.getElementById('r_phone').value.trim();
@@ -1522,7 +1522,7 @@ function resetInt(){
   document.getElementById('successBox').classList.remove('show');
 
   // reset inputs properly
-  ['r_title','r_name','r_email','r_phone','r_country'].forEach(id=>{
+  ['r_title_int','r_name','r_email','r_phone','r_country'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.value='';
   });

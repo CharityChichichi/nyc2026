@@ -1469,7 +1469,7 @@ async function submitInter(){
   const country=document.getElementById('r_country_int').value.trim();
   const acc=document.querySelector('input[name=acc_int]:checked')?.value||'No';
   const diet='';
-
+  console.log('fields:', {title, name, email, phone, country, acc});
   let fee, note;
 
   if(title === 'Pastor'){

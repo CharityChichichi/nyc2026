@@ -1326,21 +1326,46 @@ function doLogout(){
 }
 
 // ── LOAD REGISTRATIONS ───────────────────────────────────────────
-async function loadRegistrations(){
+function loadRegistrations(){
   const prov=window._secProv;const isMaster=window._isMaster;
   if(!prov)return;
   showOverlay('LOADING REGISTRATIONS…');
-  try{
-    const action=isMaster?'getAll':'getByProvince';
-    const params=new URLSearchParams({action,province:prov});
-    const res=await fetch(APPS_SCRIPT_URL+'?'+params.toString(),{method:'GET',redirect:'follow'});
-    const json=await res.json();
-    window._secRows=json.rows||[];
-  }catch(e){
+  const action=isMaster?'getAll':'getByProvince';
+  const cbName='cb_'+Date.now();
+  const params=new URLSearchParams({action,province:prov,callback:cbName});
+  window[cbName]=function(json){
+    delete window[cbName];
+    document.getElementById('jsonp_script')&&document.getElementById('jsonp_script').remove();
+    hideOverlay();
+    if(json&&json.rows){
+      window._secRows=json.rows;
+    } else {
+      window._secRows=[];
+      toast('No data returned. Make sure Apps Script is deployed correctly.','err');
+    }
+    renderTable();updateStats();
+  };
+  const script=document.createElement('script');
+  script.id='jsonp_script';
+  script.onerror=function(){
+    delete window[cbName];
+    hideOverlay();
     window._secRows=getDemoRows(isMaster?'ALL':prov,isMaster);
     toast('Could not connect to Google Sheets. Check your Apps Script deployment.','err');
-  }
-  hideOverlay();renderTable();updateStats();
+    renderTable();updateStats();
+  };
+  script.src=APPS_SCRIPT_URL+'?'+params.toString();
+  document.head.appendChild(script);
+  // Timeout fallback after 10 seconds
+  setTimeout(function(){
+    if(window[cbName]){
+      delete window[cbName];
+      hideOverlay();
+      window._secRows=getDemoRows(isMaster?'ALL':prov,isMaster);
+      toast('Connection timed out. Check Apps Script deployment.','err');
+      renderTable();updateStats();
+    }
+  },10000);
 }
 function getDemoRows(prov,isMaster){
   const base=[
@@ -1388,8 +1413,16 @@ async function confirmPayment(id,rowIndex){
   renderTable();updateStats();
   showOverlay('CONFIRMING PAYMENT…');
   try{
-    const confirmParams=new URLSearchParams({action:'confirm',id:reg.id,rowIndex,name:reg.name,email:reg.email,title:reg.title,province:reg.province,zone:reg.zone||'',accommodation:reg.accommodation,fee:reg.fee});
-    await fetch(APPS_SCRIPT_URL+'?'+confirmParams.toString(),{method:'GET',redirect:'follow'});
+    const cbConfirm='cbConf_'+Date.now();
+    const confirmParams=new URLSearchParams({action:'confirm',id:reg.id,rowIndex,name:reg.name,email:reg.email,title:reg.title,province:reg.province,zone:reg.zone||'',accommodation:reg.accommodation,fee:reg.fee,callback:cbConfirm});
+    await new Promise((resolve)=>{
+      window[cbConfirm]=function(r){ delete window[cbConfirm]; document.getElementById('jsonp_confirm')&&document.getElementById('jsonp_confirm').remove(); resolve(r); };
+      const sc=document.createElement('script'); sc.id='jsonp_confirm';
+      sc.onerror=function(){ delete window[cbConfirm]; resolve({success:false}); };
+      sc.src=APPS_SCRIPT_URL+'?'+confirmParams.toString();
+      document.head.appendChild(sc);
+      setTimeout(()=>{ if(window[cbConfirm]){ delete window[cbConfirm]; resolve({success:false}); } },8000);
+    });
     toast(`✓ Payment confirmed for ${reg.name}. Email sent to ${reg.email}`);
   }catch(e){toast('Confirmed locally. Sync to Sheets when URL is configured.','err');}
   hideOverlay();

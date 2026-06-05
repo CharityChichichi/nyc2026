@@ -806,8 +806,8 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
       <div class="form-group">
         <label>Accommodation Required? *</label>
         <div class="radio-group">
-          <div class="radio-item"><input type="radio" name="acc" id="acc_yes" value="Yes"><label for="acc_yes">Yes, I need accommodation</label></div>
-          <div class="radio-item"><input type="radio" name="acc" id="acc_no" value="No" checked><label for="acc_no">No, I have my own</label></div>
+          <div class="radio-item"><input type="radio" name="acc" id="acc_yes_int" value="Yes"><label for="acc_yes_int">Yes, I need accommodation</label></div>
+          <div class="radio-item"><input type="radio" name="acc" id="acc_no_int" value="No" checked><label for="acc_no_int">No, I have my own</label></div>
         </div>
       </div>
       <div class="fee-display">
@@ -1530,7 +1530,7 @@ function resetInt(){
   document.getElementById('feeAmt_int').textContent='—';
   document.getElementById('feeNote_int').textContent='Select title to calculate';
 
-  document.querySelector('input[name=acc][value=No]').checked=true;
+  document.querySelector('input[name=acc_int][value=No]').checked=true;
 }
 
 // ── SECRETARY LOGIN ───────────────────────────────────────────────

@@ -1332,12 +1332,13 @@ async function loadRegistrations(){
   showOverlay('LOADING REGISTRATIONS…');
   try{
     const action=isMaster?'getAll':'getByProvince';
-    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,data:{province:prov}})});
+    const params=new URLSearchParams({action,province:prov});
+    const res=await fetch(APPS_SCRIPT_URL+'?'+params.toString(),{method:'GET',redirect:'follow'});
     const json=await res.json();
     window._secRows=json.rows||[];
   }catch(e){
     window._secRows=getDemoRows(isMaster?'ALL':prov,isMaster);
-    toast('Live data unavailable — showing demo data. Set APPS_SCRIPT_URL to go live.','err');
+    toast('Could not connect to Google Sheets. Check your Apps Script deployment.','err');
   }
   hideOverlay();renderTable();updateStats();
 }
@@ -1387,7 +1388,8 @@ async function confirmPayment(id,rowIndex){
   renderTable();updateStats();
   showOverlay('CONFIRMING PAYMENT…');
   try{
-    await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'confirm',data:{...reg,rowIndex}})});
+    const confirmParams=new URLSearchParams({action:'confirm',id:reg.id,rowIndex,name:reg.name,email:reg.email,title:reg.title,province:reg.province,zone:reg.zone||'',accommodation:reg.accommodation,fee:reg.fee});
+    await fetch(APPS_SCRIPT_URL+'?'+confirmParams.toString(),{method:'GET',redirect:'follow'});
     toast(`✓ Payment confirmed for ${reg.name}. Email sent to ${reg.email}`);
   }catch(e){toast('Confirmed locally. Sync to Sheets when URL is configured.','err');}
   hideOverlay();

@@ -811,8 +811,8 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         </div>
       </div>
       <div class="fee-display">
-        <div><div class="fdl">Registration Fee</div><div style="color:var(--pu4);font-size:.72rem;margin-top:.2rem" id="feeNote">Select title to calculate</div></div>
-        <div class="fda" id="feeAmt">—</div>
+        <div><div class="fdl">Registration Fee</div><div style="color:var(--pu4);font-size:.72rem;margin-top:.2rem" id="feeNote_int">Select title to calculate</div></div>
+        <div class="fda" id="feeAmt_int">—</div>
       </div>
       <button class="submit-btn" onclick="submitInter()">✦ Submit Registration ✦</button>
       <div class="contact-note">
@@ -1455,8 +1455,8 @@ function updateFee(){
     note='International Pastor Rate';
   }
 
-  document.getElementById('feeAmt').textContent='R'+fee;
-  document.getElementById('feeNote').textContent=note;
+  document.getElementById('feeAmt_int').textContent='R'+fee;
+  document.getElementById('feeNote_int').textContent=note;
 }
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){
@@ -1501,15 +1501,13 @@ async function submitInter(){
     fee,
     status:'Pending'
   };
-
   showOverlay('SUBMITTING…');
-
   try{
     await fetch(APPS_SCRIPT_URL,{
       method:'POST',
       mode:'no-cors',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'inter',data:reg})
+      body:JSON.stringify({action:'international',data:reg})
     });
   }catch(e){}
 
@@ -1529,8 +1527,8 @@ function resetInt(){
     if(el) el.value='';
   });
 
-  document.getElementById('feeAmt').textContent='—';
-  document.getElementById('feeNote').textContent='Select title to calculate';
+  document.getElementById('feeAmt_int').textContent='—';
+  document.getElementById('feeNote_int').textContent='Select title to calculate';
 
   document.querySelector('input[name=acc][value=No]').checked=true;
 }

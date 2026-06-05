@@ -80,7 +80,7 @@ nav.scrolled{background:rgba(17,8,38,.98);border-bottom-color:rgba(240,192,64,.4
 
 .hero-nyc-wrap{position:relative;display:inline-block;animation:fadeUp 1s .5s both}
 .hero-nyc{font-family:'Cinzel Decorative',cursive;font-size:clamp(5.5rem,20vw,13rem);font-weight:900;line-height:.85;background:linear-gradient(135deg,#FFE07A 0%,#F0C040 25%,#B8860B 50%,#F0C040 75%,#FFE07A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite,glow 3s ease-in-out infinite}
-.hero-year-badge{display:inline-block;background:linear-gradient(135deg,rgba(91,33,182,.6),rgba(139,92,246,.4));border:1px solid rgba(139,92,246,.6);color:var(--pu4);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:5px;padding:.4rem 1.5rem;border-radius:20px;text-transform:uppercase;margin-bottom:.8rem;animation:fadeUp 1s .7s both;animation:pulse-border 2s infinite,fadeUp 1s .7s both}
+.hero-year-badge{display:inline-block;background:linear-gradient(135deg,rgba(91,33,182,.95),rgba(139,92,246,.85));border:2px solid rgba(255,255,255,.35);color:#fff;font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;letter-spacing:6px;padding:.7rem 2rem;border-radius:30px;text-transform:uppercase;margin-bottom:1rem;box-shadow:0 0 15px rgba(139,92,246,.6),0 0 30px rgba(139,92,246,.4),0 10px 30px rgba(0,0,0,.25);backdrop-filter:blur(10px);animation:pulse-border 2s infinite,fadeUp 1s .7s both}
 .hero-conf-year{font-family:'Cinzel Decorative',cursive;font-size:clamp(2.5rem,8vw,5.5rem);color:var(--white);letter-spacing:.08em;animation:fadeUp 1s .6s both}
 
 .hero-theme-block{animation:fadeUp 1s .9s both;margin-bottom:2rem}
@@ -478,7 +478,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
     <div class="hero-nyc-wrap">
       <div class="hero-nyc">NYC</div>
     </div>
-    <div class="hero-year-badge">2026 &nbsp;·&nbsp; Johannesburg, South Africa</div>
+    <div class="hero-year-badge">2026 &nbsp;·&nbsp; Johannesburg &nbsp;·&nbsp; South Africa</div>
 
     <div class="hero-theme-block">
       <div class="hero-theme-pill">Theme</div>
@@ -785,21 +785,21 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         </div>
         <div class="form-group">
           <label>Full Name *</label>
-          <input type="text" id="r_name" placeholder="Your full name" required>
+          <input type="text" id="r_name_int" placeholder="Your full name" required>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Email Address *</label>
-          <input type="email" id="r_email" placeholder="your@email.com" required>
+          <input type="email" id="r_email_int" placeholder="your@email.com" required>
         </div>
         <div class="form-group">
           <label>Phone Number *</label>
-          <input type="tel" id="r_phone" placeholder="e.g. 071 234 5678" required>
+          <input type="tel" id="r_phone_int" placeholder="e.g. 071 234 5678" required>
         </div>
           <div class="form-group">
           <label>Country *</label>
-          <input type="country" id="r_country" placeholder="e.g. Zimbabwe" required>
+          <input type="country" id="r_country_int" placeholder="e.g. Zimbabwe" required>
         </div>
       </div>
       <div class="fs-title">Conference Details</div>
@@ -1461,10 +1461,10 @@ function updateFee(){
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){
   const title=document.getElementById('r_title_int').value;
-  const name=document.getElementById('r_name').value.trim();
-  const email=document.getElementById('r_email').value.trim();
-  const phone=document.getElementById('r_phone').value.trim();
-  const country=document.getElementById('r_country').value.trim();
+  const name=document.getElementById('r_name_int').value.trim();
+  const email=document.getElementById('r_email_int').value.trim();
+  const phone=document.getElementById('r_phone_int').value.trim();
+  const country=document.getElementById('r_country_int').value.trim();
   const acc=document.querySelector('input[name=acc]:checked')?.value||'No';
   const diet='';
 
@@ -1522,7 +1522,7 @@ function resetInt(){
   document.getElementById('successBox').classList.remove('show');
 
   // reset inputs properly
-  ['r_title_int','r_name','r_email','r_phone','r_country'].forEach(id=>{
+  ['r_title_int','r_name_int','r_email_int','r_phone_int','r_country_int'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.value='';
   });

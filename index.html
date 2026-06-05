@@ -820,7 +820,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
       </div>
     </div><!-- closes reg-form-card -->
 
-    <div class="success-box" id="successBox">
+    <div class="success-box" id="successBox_int">
       <div class="s-icon">🎉</div>
       <div class="s-title">You're Registered!</div>
       <p class="s-msg">
@@ -1515,12 +1515,12 @@ async function submitInter(){
   hideOverlay();
 
   document.getElementById('interForm').style.display='none';
-  document.getElementById('successBox').classList.add('show');
+document.getElementById('successBox_int').classList.add('show');
 }
 
 function resetInt(){
   document.getElementById('interForm').style.display='block';
-  document.getElementById('successBox').classList.remove('show');
+document.getElementById('successBox_int').classList.remove('show');
 
   // reset inputs properly
   ['r_title_int','r_name_int','r_email_int','r_phone_int','r_country_int'].forEach(id=>{

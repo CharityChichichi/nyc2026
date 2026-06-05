@@ -498,6 +498,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
     <div class="hero-btns" style="position:relative;z-index:3;">
       <button class="btn-hero-primary" id="heroRegBtn">✦ Register Now ✦</button>
       <button class="btn-hero-secondary" id="heroAboutBtn">Conference Details →</button>
+      <button class="btn-hero-primary" id="heroRegInt">✦ International Delegate ✦</button>
     </div>
 
     </div>
@@ -831,7 +832,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         <span style="font-size:.82rem;color:var(--pu4)">Reference: Country Name / NYC Reg</span><br><br>
         <span style="font-size:.82rem;color:var(--pu4)">For enquiries: Chiedza — 062 598 3048 | Tamah — 069 345 3004 | Munashe — 067 905 2419 | Tanatswa — 083 391 4018</span>
       </p>
-      <button class="btn-hero-primary" style="margin-top:2rem" onclick="resetReg()">Register Another Person</button>
+      <button class="btn-hero-primary" style="margin-top:2rem" onclick="resetInt()">Register Another Person</button>
     </div>
 </div>
 
@@ -1444,18 +1445,18 @@ function resetReg(){
 }
 
 function updateFee(){
-  const title = document.getElementById('r_title').value;
+  const title=document.getElementById('r_title').value;
 
-  let fee = 100;
-  let note = 'Outside Gauteng rate';
+  let fee=100;
+  let note='International Delegate Rate';
 
-  if(title === 'Pastor'){
-    fee = 500;
-    note = 'Pastor rate';
+  if(title==='Pastor'){
+    fee=500;
+    note='International Pastor Rate';
   }
 
-  document.getElementById('feeAmt').innerText = "R" + fee;
-  document.getElementById('feeNote').innerText = note;
+  document.getElementById('feeAmt').textContent='R'+fee;
+  document.getElementById('feeNote').textContent=note;
 }
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){

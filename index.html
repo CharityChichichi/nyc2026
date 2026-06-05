@@ -70,8 +70,8 @@ nav.scrolled{background:rgba(17,8,38,.98);border-bottom-color:rgba(240,192,64,.4
 
 /* ── TICKER ── */
 .ticker-wrap{width:100%;overflow:hidden;background:linear-gradient(90deg,var(--pu2),var(--red),var(--pu2));padding:.5rem 0;margin-bottom:2.5rem;mask:linear-gradient(90deg,transparent,black 10%,black 90%,transparent)}
-.ticker-track{display:flex;width:max-content;animation:ticker 45s linear infinite}
-.ticker-item{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--white);white-space:nowrap;padding:0 .8rem;text-transform:uppercase}
+.ticker-track{display:flex;width:max-content;animation:ticker 20s linear infinite}
+.ticker-item{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;color:var(--white);white-space:nowrap;padding:0 3rem;text-transform:uppercase}
 .ticker-dot{color:var(--gold)}
 
 .hero-org{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:5px;color:var(--pu4);margin-bottom:1.2rem;text-transform:uppercase;animation:fadeIn 1s .2s both}
@@ -79,7 +79,7 @@ nav.scrolled{background:rgba(17,8,38,.98);border-bottom-color:rgba(240,192,64,.4
 
 .hero-nyc-wrap{position:relative;display:inline-block;animation:fadeUp 1s .5s both}
 .hero-nyc{font-family:'Cinzel Decorative',cursive;font-size:clamp(5.5rem,20vw,13rem);font-weight:900;line-height:.85;background:linear-gradient(135deg,#FFE07A 0%,#F0C040 25%,#B8860B 50%,#F0C040 75%,#FFE07A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite,glow 3s ease-in-out infinite}
-.hero-year-badge{display:inline-block;background:linear-gradient(135deg,rgba(91,33,182,.95),rgba(139,92,246,.85));border:2px solid rgba(255,255,255,.35);color:#fff;font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;letter-spacing:6px;padding:.7rem 2rem;border-radius:30px;text-transform:uppercase;margin-bottom:1rem;box-shadow:0 0 15px rgba(139,92,246,.6),0 0 30px rgba(139,92,246,.4),0 10px 30px rgba(0,0,0,.25);backdrop-filter:blur(10px);animation:pulse-border 2s infinite,fadeUp 1s .7s both}
+.hero-year-badge{display:inline-block;background:linear-gradient(135deg,rgba(91,33,182,.6),rgba(139,92,246,.4));border:1px solid rgba(139,92,246,.6);color:var(--pu4);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:5px;padding:.4rem 1.5rem;border-radius:20px;text-transform:uppercase;margin-bottom:.8rem;animation:fadeUp 1s .7s both;animation:pulse-border 2s infinite,fadeUp 1s .7s both}
 .hero-conf-year{font-family:'Cinzel Decorative',cursive;font-size:clamp(2.5rem,8vw,5.5rem);color:var(--white);letter-spacing:.08em;animation:fadeUp 1s .6s both}
 
 .hero-theme-block{animation:fadeUp 1s .9s both;margin-bottom:2rem}
@@ -805,7 +805,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         </div>
       </div>
       <div class="fee-display">
-        <div><div class="fdl">Registration Fee</div><div style="color:var(--pu4);font-size:.72rem;margin-top:.2rem" id="feeNote">Select title and zone to calculate</div></div>
+        <div><div class="fdl">Registration Fee</div><div style="color:var(--pu4);font-size:.72rem;margin-top:.2rem" id="feeNote">Select title to calculate</div></div>
         <div class="fda" id="feeAmt">—</div>
       </div>
       <button class="submit-btn" onclick="submitInter()">✦ Submit Registration ✦</button>
@@ -823,7 +823,7 @@ footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2)
         Once the international relations or registration HOD confirms your payment, you'll receive a confirmation email.<br><br>
         Please deposit or transfer your registration fee to:<br>
         <strong style="color:var(--gold)">FNB — 62414918360</strong><br>
-        <span style="font-size:.82rem;color:var(--pu4)">Reference: Province Name / NYC Reg</span><br><br>
+        <span style="font-size:.82rem;color:var(--pu4)">Reference: Country Name / NYC Reg</span><br><br>
         <span style="font-size:.82rem;color:var(--pu4)">For enquiries: Chiedza — 062 598 3048 | Tamah — 069 345 3004 | Munashe — 067 905 2419 | Tanatswa — 083 391 4018</span>
       </p>
       <button class="btn-hero-primary" style="margin-top:2rem" onclick="resetReg()">Register Another Person</button>
@@ -1440,24 +1440,25 @@ function resetReg(){
 
 function updateFee(){
   const title = document.getElementById('r_title').value;
+
   let fee = 100;
-  let note = 'Outside Gauteng rate (incl. Advisors)';
+  let note = 'Outside Gauteng rate';
 
   if(title === 'Pastor'){
     fee = 500;
     note = 'Pastor rate';
   }
 
-  document.getElementById('feeDisplay').innerText = "R" + fee;
+  document.getElementById('feeAmt').innerText = "R" + fee;
+  document.getElementById('feeNote').innerText = note;
 }
-
 // ── INTERNATIONAL DELEGATION ─────────────────────────────────────────────────
 async function submitInter(){
   const title=document.getElementById('r_title').value;
   const name=document.getElementById('r_name').value.trim();
   const email=document.getElementById('r_email').value.trim();
   const phone=document.getElementById('r_phone').value.trim();
-  const zone=document.getElementById('r_country').value.trim();
+  const country=document.getElementById('r_country').value.trim();
   const acc=document.querySelector('input[name=acc]:checked')?.value||'No';
   const diet='';
 
@@ -1470,23 +1471,61 @@ async function submitInter(){
       fee = 100;
       note = 'Outside Gauteng rate (incl. Advisors)';
   }
-  if(!title||!name||!email||!phone||!country){toast('Please fill in all required fields.','err');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.','err');return;}
-  const reg={id:Date.now().toString(),timestamp:new Date().toISOString(),title,name,email,phone,country,accommodation:acc,dietary:diet,fee,status:'Pending'};
+
+  if(!title || !name || !email || !phone || !country){
+    toast('Please fill in all required fields.','err');
+    return;
+  }
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    toast('Please enter a valid email address.','err');
+    return;
+  }
+
+  const reg={
+    id:Date.now().toString(),
+    timestamp:new Date().toISOString(),
+    title,
+    name,
+    email,
+    phone,
+    country,
+    accommodation:acc,
+    dietary:diet,
+    fee,
+    status:'Pending'
+  };
+
   showOverlay('SUBMITTING…');
+
   try{
-    await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'inter',data:reg})});
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'inter',data:reg})
+    });
   }catch(e){}
+
   hideOverlay();
+
   document.getElementById('interForm').style.display='none';
   document.getElementById('successBox').classList.add('show');
 }
+
 function resetInt(){
   document.getElementById('interForm').style.display='block';
   document.getElementById('successBox').classList.remove('show');
-  ['r_title','r_name','r_email','r_phone','r_country'];
+
+  // reset inputs properly
+  ['r_title','r_name','r_email','r_phone','r_country'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+
   document.getElementById('feeAmt').textContent='—';
   document.getElementById('feeNote').textContent='Select title to calculate';
+
   document.querySelector('input[name=acc][value=No]').checked=true;
 }
 

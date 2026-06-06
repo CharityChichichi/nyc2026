@@ -138,12 +138,28 @@ nav.scrolled {
 .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 1s 1.3s both}
 .btn-hero-primary{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:2px;font-weight:700;background:linear-gradient(135deg,var(--gold-d),var(--gold),var(--gold-l));color:#1A0533;border:none;padding:1rem 2.5rem;cursor:pointer;text-transform:uppercase;border-radius:30px;box-shadow:0 4px 25px rgba(240,192,64,.4);transition:all .3s;animation:heartbeat 2s 2s infinite}
 .btn-hero-primary:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 8px 40px rgba(240,192,64,.6)}
-.btn-hero-secondary{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:2px;background:rgba(139,92,246,.15);color:var(--pu4);border:1px solid rgba(139,92,246,.5);padding:1rem 2.5rem;cursor:pointer;text-transform:uppercase;border-radius:30px;transition:all .3s;backdrop-filter:blur(4px)}
-.btn-hero-secondary:hover{background:rgba(139,92,246,.3);border-color:var(--pu3);color:var(--white);transform:translateY(-2px)}
+.btn-hero-secondary {
+  color: #EDE9FE;                                     /* brighter text */
+  border: 1.5px solid rgba(196, 181, 253, .75);       /* more visible border */
+  background: rgba(139, 92, 246, .25);                /* slightly more fill */
+}
+.btn-hero-secondary:hover {
+  background: rgba(139, 92, 246, .4);
+  border-color: #A78BFA;
+  color: #FFFFFF;
+}
 
-.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;animation:float 2s ease-in-out infinite}
-.scroll-cue span{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:4px;color:var(--pu4);text-transform:uppercase}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--pu3),transparent)}
+.scroll-cue {
+  opacity: 1;                          /* remove the .5 opacity */
+}
+.scroll-cue span {
+  color: #DDD6FE;                      /* brighter than before */
+  font-size: .6rem;
+}
+.scroll-line {
+  background: linear-gradient(to bottom, #8B5CF6, transparent);
+  width: 2px;                          /* thicker line */
+}
 
 /* ── FLOATING ORBS ── */
 .orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;animation:float 6s ease-in-out infinite}
@@ -355,18 +371,56 @@ nav.scrolled {
 .logout-btn:hover{background:rgba(244,63,94,.1);border-color:var(--red);color:var(--red)}
 
 /* ── FOOTER ── */
-footer{background:rgba(10, 1, 28, 0.95);border-top:1px solid rgba(139,92,246,.2);padding:3.5rem 2rem;text-align:center;position:relative;z-index:1}
-.ftr-logo{font-family:'Cinzel Decorative',cursive;font-size:1.3rem;background:linear-gradient(135deg,var(--gold-d),var(--gold),var(--gold-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.4rem}
-.ftr-tag{font-size:.8rem;color:var(--pu4);margin-bottom:1rem;font-style:italic}
-.ftr-verse{font-size:.75rem;color:var(--red);letter-spacing:2px;margin-bottom:1.5rem;font-family:'Cinzel',serif}
-.ftr-contacts{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
-.ftr-contact{font-size:.83rem;color:var(--pu4)}
-.ftr-contact strong{color:var(--gold);font-family:'Cinzel',serif;letter-spacing:1px}
-.ftr-copy{font-size:.7rem;color:rgba(255,255,255,.18)}
-.ftr-tag   { color: #DDD6FE; }                         /* was muted lavender */
-.ftr-contact { color: #EDE9FE; }                        /* was dim */
-.ftr-contact strong { color: #FFE07A; }                 /* slightly brighter gold */
-.ftr-copy  { color: rgba(255, 255, 255, .45); }         /* was .18 — nearly invisible */
+footer {
+  background: rgba(10, 1, 28, 0.95);
+  border-top: 1px solid rgba(139, 92, 246, .2);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.ftr-logo {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--gold-d), var(--gold), var(--gold-l));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .4rem;
+}
+.ftr-tag {
+  font-size: .8rem;
+  color: #DDD6FE;                  /* merged — was var(--pu4) */
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+.ftr-verse {
+  font-size: .75rem;
+  color: var(--red);
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+  font-family: 'Cinzel', serif;
+}
+.ftr-contacts {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.ftr-contact {
+  font-size: .83rem;
+  color: #EDE9FE;                  /* merged — was var(--pu4) */
+}
+.ftr-contact strong {
+  color: #FFE07A;                  /* merged — was var(--gold) */
+  font-family: 'Cinzel', serif;
+  letter-spacing: 1px;
+}
+.ftr-copy {
+  font-size: .7rem;
+  color: rgba(255, 255, 255, .45); /* merged — was .18 */
+}
 
 /* ── OVERLAY + TOAST ── */
 .overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,0,30,.88);align-items:center;justify-content:center;flex-direction:column;gap:1rem}

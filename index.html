@@ -370,6 +370,84 @@ nav.scrolled {
 .logout-btn{background:transparent;border:1px solid rgba(139,92,246,.3);color:var(--pu3);font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:2px;padding:.48rem .9rem;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all .2s}
 .logout-btn:hover{background:rgba(244,63,94,.1);border-color:var(--red);color:var(--red)}
 
+/* ── DASHBOARD BRIGHTNESS FIXES ── */
+
+/* Stat cards — labels and numbers */
+.stat-lbl {
+  color: #DDD6FE;                              /* was var(--pu4) — dim */
+  font-weight: 600;
+}
+.stat-num {
+  color: #FFE07A;                              /* brighter gold */
+}
+.stat-card {
+  background: rgba(255, 255, 255, .07);        /* slightly more visible card */
+  border-color: rgba(139, 92, 246, .35);
+}
+
+/* Buttons — Refresh, Logout, Master View */
+.refresh-btn {
+  color: #DDD6FE;
+  border-color: rgba(196, 181, 253, .5);
+  background: rgba(139, 92, 246, .18);
+}
+.refresh-btn:hover {
+  color: #fff;
+  background: rgba(139, 92, 246, .35);
+}
+.logout-btn {
+  color: #FDA4AF;
+  border-color: rgba(244, 63, 94, .45);
+}
+.logout-btn:hover {
+  color: #fff;
+  background: rgba(244, 63, 94, .2);
+  border-color: var(--red);
+}
+.prov-badge {
+  color: #DDD6FE;
+  border-color: rgba(196, 181, 253, .5);
+  background: rgba(139, 92, 246, .25);
+}
+
+/* Table headers */
+.rt th {
+  color: #DDD6FE;                              /* was dim purple */
+  letter-spacing: 2px;
+}
+
+/* Table body text */
+.rt td {
+  color: #EDE9FE;                              /* was var(--pu4) */
+}
+
+/* Search bar placeholder + text */
+.search-bar {
+  color: #EDE9FE;
+  border-color: rgba(196, 181, 253, .4);
+}
+.search-bar::placeholder {
+  color: rgba(196, 181, 253, .6);
+}
+
+/* "Registrations" eyebrow in dashboard */
+#page-secretary .sec-eyebrow {
+  color: #EDE9FE;
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* Tip/sync note text */
+#syncNote {
+  color: #DDD6FE !important;
+}
+
+/* Loading / empty state */
+.loading-row td,
+#emptyState {
+  color: #C4B5FD;
+}
 /* ── FOOTER ── */
 footer {
   background: rgba(10, 1, 28, 0.95);

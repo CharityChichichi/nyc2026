@@ -1612,45 +1612,98 @@ function doLogout(){
 
 // ── LOAD REGISTRATIONS ───────────────────────────────────────────
 function loadRegistrations(){
-  const prov=window._secProv;const isMaster=window._isMaster;
-  if(!prov)return;
+  const prov = window._secProv;
+  const isMaster = window._isMaster;
+  if(!prov) return;
   showOverlay('LOADING REGISTRATIONS…');
-  const action=isMaster?'getAll':'getByProvince';
-  const cbName='cb_'+Date.now();
-  const params=new URLSearchParams({action,province:prov,callback:cbName});
-  window[cbName]=function(json){
-    delete window[cbName];
-    document.getElementById('jsonp_script')&&document.getElementById('jsonp_script').remove();
-    hideOverlay();
-    if(json&&json.rows){
-      window._secRows=json.rows;
-    } else {
-      window._secRows=[];
-      toast('No data returned. Make sure Apps Script is deployed correctly.','err');
-    }
-    renderTable();updateStats();
-  };
-  const script=document.createElement('script');
-  script.id='jsonp_script';
-  script.onerror=function(){
-    delete window[cbName];
-    hideOverlay();
-    window._secRows=getDemoRows(isMaster?'ALL':prov,isMaster);
-    toast('Could not connect to Google Sheets. Check your Apps Script deployment.','err');
-    renderTable();updateStats();
-  };
-  script.src=APPS_SCRIPT_URL+'?'+params.toString();
-  document.head.appendChild(script);
-  // Timeout fallback after 10 seconds
-  setTimeout(function(){
-    if(window[cbName]){
-      delete window[cbName];
+
+  if(isMaster){
+    // Fetch both local + international in parallel via two JSONP calls
+    let localDone = false, intDone = false;
+    let localRows = [], intRows = [];
+
+    function onBothDone(){
       hideOverlay();
-      window._secRows=getDemoRows(isMaster?'ALL':prov,isMaster);
-      toast('Connection timed out. Check Apps Script deployment.','err');
-      renderTable();updateStats();
+      // Tag rows so confirmPayment knows which sheet
+      localRows.forEach(r => r.type = 'local');
+      intRows.forEach(r => r.type = 'international');
+      window._secRows = [...localRows, ...intRows];
+      renderTable();
+      updateStats();
     }
-  },10000);
+
+    // --- Local fetch ---
+    const cb1 = 'cb_local_' + Date.now();
+    window[cb1] = function(json){
+      delete window[cb1];
+      document.getElementById('jsonp_local')?.remove();
+      localRows = (json && json.rows) ? json.rows : [];
+      localDone = true;
+      if(intDone) onBothDone();
+    };
+    const s1 = document.createElement('script');
+    s1.id = 'jsonp_local';
+    s1.onerror = function(){ delete window[cb1]; localDone = true; if(intDone) onBothDone(); };
+    s1.src = APPS_SCRIPT_URL + '?' + new URLSearchParams({action:'getAll', callback:cb1}).toString();
+    document.head.appendChild(s1);
+
+    // --- International fetch ---
+    const cb2 = 'cb_int_' + Date.now();
+    window[cb2] = function(json){
+      delete window[cb2];
+      document.getElementById('jsonp_int')?.remove();
+      intRows = (json && json.rows) ? json.rows : [];
+      intDone = true;
+      if(localDone) onBothDone();
+    };
+    const s2 = document.createElement('script');
+    s2.id = 'jsonp_int';
+    s2.onerror = function(){ delete window[cb2]; intDone = true; if(localDone) onBothDone(); };
+    s2.src = APPS_SCRIPT_URL + '?' + new URLSearchParams({action:'getAllInternational', callback:cb2}).toString();
+    document.head.appendChild(s2);
+
+    // Timeout fallback
+    setTimeout(function(){
+      if(window[cb1] || window[cb2]){
+        delete window[cb1]; delete window[cb2];
+        hideOverlay();
+        window._secRows = getDemoRows('ALL', true);
+        toast('Connection timed out. Check Apps Script deployment.','err');
+        renderTable(); updateStats();
+      }
+    }, 10000);
+
+  } else {
+    // Province secretary — local only, unchanged
+    const cbName = 'cb_' + Date.now();
+    const params = new URLSearchParams({action:'getByProvince', province:prov, callback:cbName});
+    window[cbName] = function(json){
+      delete window[cbName];
+      document.getElementById('jsonp_script')?.remove();
+      hideOverlay();
+      window._secRows = (json && json.rows) ? json.rows.map(r=>({...r, type:'local'})) : [];
+      if(!window._secRows.length) toast('No data returned.','err');
+      renderTable(); updateStats();
+    };
+    const script = document.createElement('script');
+    script.id = 'jsonp_script';
+    script.onerror = function(){
+      delete window[cbName]; hideOverlay();
+      window._secRows = getDemoRows(prov, false);
+      toast('Could not connect to Google Sheets.','err');
+      renderTable(); updateStats();
+    };
+    script.src = APPS_SCRIPT_URL + '?' + params.toString();
+    document.head.appendChild(script);
+    setTimeout(function(){
+      if(window[cbName]){
+        delete window[cbName]; hideOverlay();
+        window._secRows = getDemoRows(prov, false);
+        toast('Connection timed out.','err');
+        renderTable(); updateStats();
+      }
+    }, 10000);
+  }
 }
 function getDemoRows(prov,isMaster){
   const base=[
@@ -1666,51 +1719,102 @@ function getDemoRows(prov,isMaster){
 
 // ── RENDER TABLE ─────────────────────────────────────────────────
 function renderTable(){
-  const q=(document.getElementById('searchBar')?.value||'').toLowerCase();
-  const isMaster=window._isMaster;
-  const rows=(window._secRows||[]).filter(r=>!q||r.name.toLowerCase().includes(q)||r.email.toLowerCase().includes(q)||(r.province||'').toLowerCase().includes(q));
-  const tbody=document.getElementById('regTbody');
-  const empty=document.getElementById('emptyState');
-  const thead=document.querySelector('.rt thead tr');
+  const q = (document.getElementById('searchBar')?.value || '').toLowerCase();
+  const isMaster = window._isMaster;
+  const rows = (window._secRows || []).filter(r =>
+    !q ||
+    r.name.toLowerCase().includes(q) ||
+    r.email.toLowerCase().includes(q) ||
+    (r.province || '').toLowerCase().includes(q) ||
+    (r.country  || '').toLowerCase().includes(q)   // ← international search
+  );
+  const tbody = document.getElementById('regTbody');
+  const empty = document.getElementById('emptyState');
+  const thead = document.querySelector('.rt thead tr');
+
   if(isMaster){
-    thead.innerHTML=`<th>#</th><th>Confirm Paid</th><th>Name</th><th>Title</th><th>Province</th><th>Email</th><th>Phone</th><th>Accommodation</th><th>Fee</th><th>Status</th>`;
-  }else{
-    thead.innerHTML=`<th>#</th><th>Confirm Paid</th><th>Name</th><th>Title</th><th>Email</th><th>Phone</th><th>Accommodation</th><th>Fee</th><th>Status</th>`;
+    thead.innerHTML = `<th>#</th><th>Confirm Paid</th><th>Name</th><th>Title</th><th>Province / Country</th><th>Email</th><th>Phone</th><th>Accommodation</th><th>Fee</th><th>Status</th>`;
+  } else {
+    thead.innerHTML = `<th>#</th><th>Confirm Paid</th><th>Name</th><th>Title</th><th>Email</th><th>Phone</th><th>Accommodation</th><th>Fee</th><th>Status</th>`;
   }
-  if(!rows.length){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  tbody.innerHTML=rows.map((r,i)=>{
-    const confirmed=r.status==='Confirmed';
-    const tick=confirmed
-      ?`<div class="tick-wrap"><div class="tick-box checked"><svg viewBox="0 0 12 10" fill="none" stroke="#1A0533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,5 4.5,8.5 11,1"/></svg></div><span class="tick-confirmed-lbl">Confirmed</span></div>`
-      :`<div class="tick-wrap"><div class="tick-box" id="tick_${r.id}" onclick="confirmPayment('${r.id}','${r.rowIndex}')"><svg viewBox="0 0 12 10" fill="none" stroke="#1A0533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,5 4.5,8.5 11,1"/></svg></div><span class="tick-lbl">Confirm</span></div>`;
-    const provCell=isMaster?`<td style="font-size:.78rem;color:var(--gold);font-family:'Cinzel',serif">${r.province}</td>`:'';
-    return `<tr><td style="color:var(--gold);font-family:'Cinzel',serif;font-size:.78rem">${i+1}</td><td>${tick}</td><td style="color:var(--white);font-weight:600">${r.name}</td><td>${r.title}</td>${provCell}<td style="font-size:.8rem">${r.email}</td><td style="font-size:.8rem">${r.phone}</td><td>${r.accommodation}</td><td style="color:var(--gold);font-family:'Cinzel',serif">R${r.fee}</td><td><span class="${confirmed?'badge-confirmed':'badge-pending'}">${confirmed?'✓ Paid':'⏳ Pending'}</span></td></tr>`;
+
+  if(!rows.length){ tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = rows.map((r, i) => {
+    const confirmed = r.status === 'Confirmed';
+    const tick = confirmed
+      ? `<div class="tick-wrap"><div class="tick-box checked"><svg viewBox="0 0 12 10" fill="none" stroke="#1A0533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,5 4.5,8.5 11,1"/></svg></div><span class="tick-confirmed-lbl">Confirmed</span></div>`
+      : `<div class="tick-wrap"><div class="tick-box" id="tick_${r.id}" onclick="confirmPayment('${r.id}','${r.rowIndex}','${r.type||'local'}')"><svg viewBox="0 0 12 10" fill="none" stroke="#1A0533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,5 4.5,8.5 11,1"/></svg></div><span class="tick-lbl">Confirm</span></div>`;
+
+    // Province/Country cell — show country for international, province for local
+    const locationVal = r.type === 'international'
+      ? `🌍 ${r.country}`
+      : (r.province || '');
+    const provCell = isMaster
+      ? `<td style="font-size:.78rem;color:var(--gold);font-family:'Cinzel',serif">${locationVal}</td>`
+      : '';
+
+    return `<tr>
+      <td style="color:var(--gold);font-family:'Cinzel',serif;font-size:.78rem">${i+1}</td>
+      <td>${tick}</td>
+      <td style="color:var(--white);font-weight:600">${r.name}</td>
+      <td>${r.title}</td>
+      ${provCell}
+      <td style="font-size:.8rem">${r.email}</td>
+      <td style="font-size:.8rem">${r.phone}</td>
+      <td>${r.accommodation}</td>
+      <td style="color:var(--gold);font-family:'Cinzel',serif">R${r.fee}</td>
+      <td><span class="${confirmed ? 'badge-confirmed' : 'badge-pending'}">${confirmed ? '✓ Paid' : '⏳ Pending'}</span></td>
+    </tr>`;
   }).join('');
 }
 
+
 // ── CONFIRM PAYMENT ──────────────────────────────────────────────
-async function confirmPayment(id,rowIndex){
-  const rows=window._secRows||[];
-  const reg=rows.find(r=>r.id.toString()===id.toString());
-  if(!reg)return;
-  reg.status='Confirmed';
-  renderTable();updateStats();
-  showOverlay('CONFIRMING PAYMENT…');
-  try{
-    const cbConfirm='cbConf_'+Date.now();
-    const confirmParams=new URLSearchParams({action:'confirm',id:reg.id,rowIndex,name:reg.name,email:reg.email,title:reg.title,province:reg.province,zone:reg.zone||'',accommodation:reg.accommodation,fee:reg.fee,callback:cbConfirm});
-    await new Promise((resolve)=>{
-      window[cbConfirm]=function(r){ delete window[cbConfirm]; document.getElementById('jsonp_confirm')&&document.getElementById('jsonp_confirm').remove(); resolve(r); };
-      const sc=document.createElement('script'); sc.id='jsonp_confirm';
-      sc.onerror=function(){ delete window[cbConfirm]; resolve({success:false}); };
-      sc.src=APPS_SCRIPT_URL+'?'+confirmParams.toString();
-      document.head.appendChild(sc);
-      setTimeout(()=>{ if(window[cbConfirm]){ delete window[cbConfirm]; resolve({success:false}); } },8000);
-    });
-    toast(`✓ Payment confirmed for ${reg.name}. Email sent to ${reg.email}`);
-  }catch(e){toast('Confirmed locally. Sync to Sheets when URL is configured.','err');}
-  hideOverlay();
+function confirmPayment(id, rowIndex, type){
+  type = type || 'local';   // ← default safe fallback
+  const tickBox = document.getElementById('tick_' + id);
+  if(tickBox) tickBox.style.opacity = '0.4';
+
+  const row = (window._secRows || []).find(r => r.id == id);
+  if(!row){ toast('Row not found.', 'err'); return; }
+
+  const cbName = 'cb_confirm_' + Date.now();
+  const params = new URLSearchParams({
+    action:        'confirm',
+    id,
+    rowIndex,
+    name:          row.name,
+    email:         row.email,
+    title:         row.title,
+    province:      row.province  || '',
+    country:       row.country   || '',
+    zone:          row.zone      || '',
+    accommodation: row.accommodation,
+    fee:           row.fee,
+    type,                             // ← passes 'local' or 'international'
+    callback:      cbName
+  });
+
+  window[cbName] = function(json){
+    delete window[cbName];
+    document.getElementById('jsonp_confirm')?.remove();
+    if(json && json.success){
+      row.status = 'Confirmed';
+      renderTable();
+      updateStats();
+      toast('Payment confirmed for ' + row.name + '!', 'ok');
+    } else {
+      if(tickBox) tickBox.style.opacity = '1';
+      toast('Error: ' + (json?.error || 'Unknown'), 'err');
+    }
+  };
+
+  const script = document.createElement('script');
+  script.id = 'jsonp_confirm';
+  script.src = APPS_SCRIPT_URL + '?' + params.toString();
+  document.head.appendChild(script);
 }
 function updateStats(){
   const rows=window._secRows||[];

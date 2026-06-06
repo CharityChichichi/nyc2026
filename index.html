@@ -139,9 +139,11 @@ nav.scrolled {
 .btn-hero-primary{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:2px;font-weight:700;background:linear-gradient(135deg,var(--gold-d),var(--gold),var(--gold-l));color:#1A0533;border:none;padding:1rem 2.5rem;cursor:pointer;text-transform:uppercase;border-radius:30px;box-shadow:0 4px 25px rgba(240,192,64,.4);transition:all .3s;animation:heartbeat 2s 2s infinite}
 .btn-hero-primary:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 8px 40px rgba(240,192,64,.6)}
 .btn-hero-secondary {
-  color: #EDE9FE;                                     /* brighter text */
-  border: 1.5px solid rgba(196, 181, 253, .75);       /* more visible border */
-  background: rgba(139, 92, 246, .25);                /* slightly more fill */
+  border-radius: 30px;                              /* was likely 0 or sharp */
+  padding: 1rem 2.5rem;
+  color: #EDE9FE;
+  border: 1.5px solid rgba(196, 181, 253, .75);
+  background: rgba(139, 92, 246, .25);
 }
 .btn-hero-secondary:hover {
   background: rgba(139, 92, 246, .4);
@@ -153,12 +155,12 @@ nav.scrolled {
   opacity: 1;                          /* remove the .5 opacity */
 }
 .scroll-cue span {
-  color: #DDD6FE;                      /* brighter than before */
-  font-size: .6rem;
+  color: #DDD6FE;
+  opacity: 1;
 }
 .scroll-line {
-  background: linear-gradient(to bottom, #8B5CF6, transparent);
-  width: 2px;                          /* thicker line */
+  width: 2px;
+  background: linear-gradient(to bottom, #A78BFA, transparent);
 }
 
 /* ── FLOATING ORBS ── */
@@ -689,15 +691,13 @@ footer {
     </div>
 
     </div>
-
-  <!-- SCROLL INDICATOR — outside hero, no overlap possible -->
-  <div style="text-align:center;padding:.75rem 0;position:relative;z-index:1">
-    <div style="display:inline-flex;flex-direction:column;align-items:center;gap:.4rem;opacity:.5">
-      <span style="font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:4px;color:#C4B5FD;text-transform:uppercase">Scroll</span>
-      <div style="width:1px;height:30px;background:linear-gradient(to bottom,rgba(139,92,246,.6),transparent)"></div>
-    </div>
+<!-- SCROLL INDICATOR — outside hero, no overlap possible -->
+<div style="text-align:center;padding:.75rem 0;position:relative;z-index:1">
+  <div style="display:inline-flex;flex-direction:column;align-items:center;gap:.4rem;opacity:1">
+    <span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:4px;color:#DDD6FE;text-transform:uppercase">Scroll</span>
+    <div style="width:2px;height:40px;background:linear-gradient(to bottom,#A78BFA,transparent)"></div>
   </div>
-
+</div>
   <!-- COUNTDOWN -->
   <div class="section">
     <div class="reveal" style="text-align:center;margin-bottom:2rem">

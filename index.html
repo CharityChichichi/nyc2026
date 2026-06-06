@@ -26,11 +26,26 @@ body{font-family:'Raleway',sans-serif;background:var(--bg);color:var(--white);ov
 
 /* ── NAV ── */
 nav {
-  background: rgba(55, 28, 100, 0.95);       /* was rgba(29,14,64,0.92) */
-  border-bottom-color: rgba(196, 181, 253, .4);
+  background: rgba(45, 22, 85, 0.95);        /* slightly lighter purple, not too different */
+  border-bottom: 1px solid rgba(196, 181, 253, .35);
+  backdrop-filter: blur(16px);
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: row;                        /* force horizontal */
+  align-items: center;
+  justify-content: space-between;
+  height: 62px;
+  gap: 1rem;
+  flex-wrap: nowrap;                          /* prevent wrapping */
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  transition: all .3s;
 }
+
 nav.scrolled {
-  background: rgba(60, 32, 108, 0.98);
+  background: rgba(50, 25, 92, 0.98);
+  border-bottom-color: rgba(240, 192, 64, .4);
 }
 .nav-logo{font-family:'Cinzel Decorative',cursive;font-size:1.1rem;color:var(--gold);letter-spacing:2px;cursor:pointer;white-space:nowrap;transition:all .3s}
 .nav-logo:hover{text-shadow:0 0 20px rgba(240,192,64,.6)}
